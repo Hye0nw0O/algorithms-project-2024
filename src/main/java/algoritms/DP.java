@@ -111,11 +111,6 @@ class Node implements Comparable<Node> {
         this.distance = parent.distance + edge.getWeight(); // 거리값은 parent distance에 현재 간선 가중치 더함.
     }
 
-    public double taxi_dis(Vertex goal) { // 택시거리
-        return Math.sqrt(Math.pow(vertex.getLongitude() - goal.getLongitude(), 2)
-                + Math.pow(vertex.getLatitude() - goal.getLatitude(), 2))
-                * 6378135;
-    }
     @Override
     public int compareTo(Node node) {
         return Double.compare(distance, node.distance);
