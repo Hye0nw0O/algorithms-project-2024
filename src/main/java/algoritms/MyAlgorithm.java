@@ -10,28 +10,31 @@ public class MyAlgorithm implements RoutingStrategy {
 
     @Override
     public List<Vertex> route(Graph graph) {
+        System.out.println("MyAlgorithm: Starting route");
+        long startTime = System.currentTimeMillis();
+
         List<Vertex> stopovers = graph.getStopovers();
 
         List<Vertex> route = new ArrayList<>();
 
         // 계산
-        Map<Vertex, Map<Vertex, List<Vertex>>> sToSPath = new HashMap<>();
-        for (Vertex start : stopovers) {
-            Map<Vertex, List<Vertex>> toSPath = new HashMap<>();
-            for (Vertex goal : stopovers) {
-                System.out.println("Finding path from " + start + " to " + goal);
-                long time = System.currentTimeMillis();
-                List<Vertex> path = AStar(start, goal);
-                if (path != null) {
-                    System.out.println("Path found. Time: " + (System.currentTimeMillis() - time));
-                }
-                else {
-                    System.out.println("Path not found. Time: " + (System.currentTimeMillis() - time));
-                }
-                toSPath.put(goal, path);
-            }
-            sToSPath.put(start, toSPath);
-        }
+//        Map<Vertex, Map<Vertex, List<Vertex>>> sToSPath = new HashMap<>();
+//        for (Vertex start : stopovers) {
+//            Map<Vertex, List<Vertex>> toSPath = new HashMap<>();
+//            for (Vertex goal : stopovers) {
+//                System.out.println("Finding path from " + start + " to " + goal);
+//                long time = System.currentTimeMillis();
+//                List<Vertex> path = AStar(start, goal);
+//                if (path != null) {
+//                    System.out.println("Path found. Time: " + (System.currentTimeMillis() - time));
+//                }
+//                else {
+//                    System.out.println("Path not found. Time: " + (System.currentTimeMillis() - time));
+//                }
+//                toSPath.put(goal, path);
+//            }
+//            sToSPath.put(start, toSPath);
+//        }
 
         Vertex start = stopovers.removeFirst();
         Vertex goal = stopovers.removeLast();
@@ -51,11 +54,13 @@ public class MyAlgorithm implements RoutingStrategy {
                 }
             }
 
-            route.addAll(sToSPath.get(v1).get(v2));
+            route.addAll(AStar(v1, v2));
             stopovers.remove(v2);
             v1 = v2;
         }
-        route.addAll(sToSPath.get(v1).get(goal));
+        route.addAll(AStar(v1, goal));
+
+        System.out.println("MyAlgorithm: Finished route. time: " + (System.currentTimeMillis() - startTime) + "ms");
         return route;
     }
 
@@ -118,7 +123,7 @@ class Entry implements Comparable<Entry> {
     private double h(Vertex goal) {
         return Math.sqrt(Math.pow(vertex.getLongitude() - goal.getLongitude(), 2)
                         + Math.pow(vertex.getLatitude() - goal.getLatitude(), 2))
-                * 6378135;
+                * 6378135 / 110;
     }
 
     public List<Vertex> track() {
